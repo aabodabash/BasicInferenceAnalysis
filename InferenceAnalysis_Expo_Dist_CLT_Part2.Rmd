@@ -1,0 +1,74 @@
+---
+title: "Basic Inference Analysis Part 2/2"
+author: "Ameen AboDabash"
+date: "May 29, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+##loading requrired packages
+packages<-c("datasets","ggplot2")
+sapply(packages, require, character.only = TRUE)
+## setting the seed, to insure this analysis will end up with the same results
+set.seed(1982)
+```
+
+
+
+###Part 2
+####Objectives:
+1- Provide a basic summary of the data.
+
+2- Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose.
+
+3- State your conclusions and the assumptions needed for your conclusions.
+
+
+So, lets load and summarize the thooth growth data:
+ 
+ 
+####Data Summary
+```{r}
+
+data(ToothGrowth)
+
+summary(ToothGrowth)
+
+head(ToothGrowth)
+
+
+ 
+plot <- ggplot(ToothGrowth, 
+               aes(x=factor(dose),y=len,fill=factor(dose)))
+plot + geom_boxplot(notch=F) + facet_grid(.~supp) +
+     scale_x_discrete("Dosage") +   
+     scale_y_continuous("Length of Teeth") +  
+     ggtitle("Effect of Dosage and Supplement on Tooth Growth")
+
+ 
+```
+
+####confidence intervals
+
+
+
+```{R}
+
+supp.t1 <- t.test(len~supp, paired=F, var.equal=T, data=ToothGrowth)
+supp.t2 <- t.test(len~supp, paired=F, var.equal=F, data=ToothGrowth)
+supp.result <- data.frame("p-value"=c(supp.t1$p.value, supp.t2$p.value),
+                          "Conf-Low"=c(supp.t1$conf[1],supp.t2$conf[1]),
+                          "Conf-High"=c(supp.t1$conf[2],supp.t2$conf[2]),
+                          row.names=c("Equal Var","Unequal Var"))
+supp.result
+```
+
+
+
+
+####Conclusion :
+The supplement (OJ) appears to provide better results than the supplementing with VC.
+
+
+Part1 & 2 all on [github]<https://github.com/aabodabash/BasicInferenceAnalysis.git>
